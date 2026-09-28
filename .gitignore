@@ -2,7 +2,7 @@ node_modules/
 .expo/
 dist/
 web-build/
-
+.github/
 *.orig.*
 *.jks
 *.p8

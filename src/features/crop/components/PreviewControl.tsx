@@ -1,6 +1,8 @@
 import { View } from 'react-native';
 
-import { Text, Touchable } from '@/components/ui';
+import { PlaybackIcon, Text, Touchable } from '@/components/ui';
+import { CLIP_DURATION_SECONDS } from '@/constants/clip';
+import { palette } from '@/theme/tokens';
 
 type PreviewControlProps = {
   isPlaying: boolean;
@@ -13,12 +15,15 @@ export function PreviewControl({ isPlaying, onToggle }: PreviewControlProps) {
       accessibilityRole="button"
       accessibilityLabel={isPlaying ? 'Pause preview' : 'Play the five second preview'}
       onPress={onToggle}
-      className="h-11 flex-row items-center justify-center gap-2 rounded-control border border-hairline bg-surface active:bg-elevated"
+      className="h-12 flex-row items-center justify-center gap-3 rounded-control bg-chalk active:bg-chalk/85"
     >
-      <View className={['h-2 w-2 rounded-full', isPlaying ? 'bg-accent' : 'bg-faint'].join(' ')} />
-      <Text variant="label" tone="muted">
-        {isPlaying ? 'Pause preview' : 'Preview selection'}
-      </Text>
+      <PlaybackIcon playing={isPlaying} size={15} color={palette.ink} />
+
+      <View>
+        <Text variant="heading" tone="ink">
+          {isPlaying ? 'Pause' : `Play ${CLIP_DURATION_SECONDS} seconds`}
+        </Text>
+      </View>
     </Touchable>
   );
 }

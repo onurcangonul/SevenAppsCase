@@ -5,53 +5,71 @@ A video diary built around a single constraint: every entry is exactly five seco
 Import a video from your library, slide a fixed five-second window to the moment worth keeping,
 name it, and it lands in your diary.
 
-## Requirements
+## Running the app
 
-- Node.js 20 or newer
-- Expo Go on a physical device, or an iOS Simulator / Android Emulator
-- Xcode (iOS) or Android Studio (Android) for development builds
+The trimmer is native code, so how you run FiveSec decides what you can do with it.
 
-## Setup
+| | Expo Go | Preview / development build |
+| --- | --- | --- |
+| Browse, play, edit, delete clips | yes | yes |
+| Pick or record a source video | yes | yes |
+| Scrub the five-second window and preview it | yes | yes |
+| Export a clip | no | yes |
+
+`expo-trim-video`, the library this case study asks for, ships Swift and Kotlin. Expo Go runs a fixed
+native runtime that cannot load it, so **Crop and save** fails there and says so. That is a property
+of the library, not a bug in the app, and no JavaScript fallback can trim a video on device. To see
+the whole flow, install a build.
+
+### Preview build, nothing to compile
+
+```bash
+npm install -g eas-cli
+eas login
+
+npm run build:apk          # Android APK, installable from the build link
+npm run build:simulator    # iOS .app for the Xcode Simulator
+```
+
+Both are standalone: install and open, no Metro server needed.
+
+### Building from GitHub Actions
+
+`.github/workflows/eas-build.yml` queues the same EAS builds from GitHub's runners, so the project
+upload never leaves GitHub. Useful when a local network blocks the upload to EAS.
+
+1. Create an access token at expo.dev under Account settings, Access tokens.
+2. Add it to the repository as the `EXPO_TOKEN` Actions secret.
+3. Run **EAS Build** from the Actions tab and pick a platform and profile.
+
+The job exits once the build is queued; follow it on expo.dev. A finished store build is sent to App
+Store Connect with `eas submit --platform ios --latest`, which uploads from EAS, not from your machine.
+
+### Expo Go
 
 ```bash
 npm install
 npm start
 ```
 
-Scan the QR code with Expo Go, or press `i` / `a` to open a simulator.
+Scan the QR code, or press `i` / `a` for a simulator. Everything except exporting works.
 
-### Trimming requires a development build
-
-`expo-trim-video` ships native code, so it is not part of the Expo Go runtime. Every screen, the
-picker, the timeline and the preview work in Expo Go, but pressing **Crop and save** there fails with
-`Trimming needs the native module` by design. Exporting a clip needs a build that has the trimmer
-linked. There is no Expo Go workaround; the module has to be compiled in.
-
-**Cloud build (works from any OS, including Windows):**
+### Local native build
 
 ```bash
-npm install -g eas-cli
-eas login
-eas build --profile development --platform android
-eas build --profile development --platform ios
+npm run build:android      # needs Android Studio, JAVA_HOME and ANDROID_HOME
+npm run build:ios          # needs macOS with Xcode
 ```
-
-Install the resulting build on the device, then run `npm start` and open it from that app instead of
-Expo Go.
 
 `expo-trim-video` was published against an older SDK. It autolinks under SDK 57 and
 `:expo-trim-video:compileDebugKotlin` succeeds against React Native 0.86, so no patch or fork is
 needed.
 
-**Local build:**
+## Requirements
 
-```bash
-npm run build:android
-npm run build:ios
-```
-
-`expo run:*` generates the native project and installs a development build. Android needs Android
-Studio with `JAVA_HOME` and `ANDROID_HOME` set; iOS needs macOS with Xcode.
+- Node.js 20 or newer
+- Expo Go, or a preview build, on a device or simulator
+- Xcode or Android Studio only if you build natively yourself
 
 ## Scripts
 
@@ -60,12 +78,81 @@ Studio with `JAVA_HOME` and `ANDROID_HOME` set; iOS needs macOS with Xcode.
 | `npm start` | Metro dev server |
 | `npm run start:clear` | Dev server with a cleared cache |
 | `npm run ios` / `npm run android` | Open in a simulator through Expo Go |
+| `npm run build:apk` | EAS preview APK |
+| `npm run build:simulator` | EAS iOS simulator build |
+| `npm run build:dev` | EAS development-client build (Android) |
+| `npm run build:dev:simulator` | EAS development-client build (iOS Simulator) |
+| `npm run verify` | Type check and lint |
+| `npm run build:ios` / `npm run build:android` | Local native build |
 | `npm run prebuild` | Regenerate the native projects after an `app.json` change |
-| `npm run build:ios` / `npm run build:android` | Native development build |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm run format` | Prettier |
 | `npm run doctor` | Expo project validation |
+
+## Developing
+
+### The loop
+
+Expo Go is enough while you are working on screens, navigation, state, queries or styling.
+Everything except export runs there with fast refresh, so most changes need no native build at all.
+
+The moment you touch the export path, build a development client once:
+
+```bash
+npm run build:dev              # EAS, Android APK
+npm run build:dev:simulator    # EAS, iOS Simulator
+npm run build:android          # local, needs Android Studio
+npm run build:ios              # local, needs macOS and Xcode
+```
+
+Install it, then run `npm start` and open the project from that build instead of Expo Go. JavaScript
+fast-refreshes exactly as it does in Expo Go, except the trimmer is linked, so **Crop and save**
+works.
+
+### When a rebuild is actually needed
+
+Only when native code changes:
+
+- adding a dependency that ships native code
+- editing `plugins`, `ios` or `android` in `app.json`, including icons, splash and permission strings
+- bumping the Expo SDK
+
+Everything else is JavaScript and reloads instantly. After an `app.json` change run
+`npm run prebuild` to re-apply the config, then build again. The `ios` and `android` directories are
+generated and gitignored; they are rebuilt from `app.json` on demand.
+
+### Changing the database
+
+`clips` is created by a numbered migration guarded by `PRAGMA user_version`. Editing the
+`CREATE TABLE` in migration 1 changes nothing on a device that already ran it. Append a new entry to
+`migrations` in `src/db/migrations.ts` and raise `SCHEMA_VERSION` in `src/db/schema.ts`, or reinstall
+the app to start from an empty database.
+
+### Styling a new third-party component
+
+If a component outside NativeWind's registry needs `className`, register it in
+`src/theme/interop.ts`. Without that the prop is dropped silently and the component renders
+unstyled. See [Styling third-party components](#styling-third-party-components).
+
+### Before committing
+
+```bash
+npm run verify    # tsc --noEmit && eslint .
+npm run doctor    # Expo config and SDK version matrix
+```
+
+### Local build prerequisites
+
+Android needs Android Studio and the two environment variables it does not set for you:
+
+```powershell
+$env:JAVA_HOME  = "C:\Program Files\Android\Android Studio\jbr"
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+```
+
+iOS requires macOS with Xcode. There is no way to compile an iOS app on Windows, so use
+`npm run build:dev:simulator` or `npm run build:simulator` on EAS instead.
 
 ## Usage
 
@@ -74,10 +161,11 @@ pages in batches of twelve as you scroll and pull-to-refresh re-reads the databa
 
 **New clip** opens a three-step flow:
 
-1. **Source** — pick a video at least five seconds long from the library.
-2. **Window** — a filmstrip renders across the source duration. Drag the amber window or tap where
-   it should land. The readout shows the in and out timecodes; `Preview selection` plays back
-   exactly those five seconds.
+1. **Source** — pick a video at least five seconds long from the library, or record one with the
+   camera.
+2. **Window** — a filmstrip renders across the source duration. Drag the window or tap where it
+   should land. Tapping the video or the play button under it plays back exactly the selected five
+   seconds, and the readout shows the in and out timecodes.
 3. **Details** — name and describe the clip, then `Crop and save` runs the trim.
 
 **Clip detail** plays the saved clip on loop with its name, description and the source in-point.

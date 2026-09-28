@@ -10,6 +10,7 @@ import { useClipMetadataForm } from '@/features/clips/hooks/useClipMetadataForm'
 import { useCreateClip } from '@/features/clips/hooks/useCreateClip';
 import { selectSource, selectStartMs, useCropDraftStore } from '@/features/crop/cropDraftStore';
 import { useTrimClip } from '@/features/crop/hooks/useTrimClip';
+import { isTrimmerAvailable } from '@/lib/media/trimmer';
 import { CLIP_DURATION_MS } from '@/constants/clip';
 
 export default function CropDetailsScreen() {
@@ -121,6 +122,18 @@ export default function CropDetailsScreen() {
             </View>
 
             <ClipMetadataFields control={control} onSubmitEditing={handleSubmitPress} />
+
+            {!isTrimmerAvailable ? (
+              <View className="gap-2 rounded-card border border-hairline bg-surface p-4">
+                <Text variant="label" tone="accent">
+                  Export needs a native build
+                </Text>
+                <Text variant="caption" tone="muted">
+                  Expo Go does not ship the video trimmer, so saving will fail here. Install a
+                  development or preview build and this step exports the clip.
+                </Text>
+              </View>
+            ) : null}
 
             {trimClip.isError ? <ErrorNotice error={trimClip.error} title="Export failed" /> : null}
 

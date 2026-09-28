@@ -22,7 +22,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F04642"
-      }
+      },
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "plugins": [
       "expo-router",
@@ -44,8 +45,8 @@
         "expo-image-picker",
         {
           "photosPermission": "FiveSec needs access to your library so you can pick a video to clip.",
-          "cameraPermission": false,
-          "microphonePermission": false
+          "cameraPermission": "FiveSec needs the camera so you can record a video to clip.",
+          "microphonePermission": "FiveSec needs the microphone to record sound with your video."
         }
       ],
       [
@@ -58,6 +59,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9fa2f2b1-7e37-4bf8-ad36-90c97b120641"
+      }
     }
   }
 }

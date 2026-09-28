@@ -6,24 +6,34 @@ import { ErrorNotice } from '@/components/feedback';
 import { BottomBar, Screen, StepIndicator } from '@/components/layout';
 import { Button, Text, Touchable } from '@/components/ui';
 import { useCropDraftStore } from '@/features/crop/cropDraftStore';
-import { usePickVideo } from '@/features/crop/hooks/usePickVideo';
+import { useVideoSource } from '@/features/crop/hooks/useVideoSource';
 import { isTrimmerAvailable } from '@/lib/media/trimmer';
+import type { CropSource } from '@/features/crop/cropDraftStore';
 
 export default function CropSourceScreen() {
   const router = useRouter();
   const setSource = useCropDraftStore((state) => state.setSource);
-  const { pick, isPicking, error, clearError } = usePickVideo();
+  const { pickFromLibrary, recordWithCamera, clearError, pending, error } = useVideoSource();
 
-  const choose = useCallback(async () => {
+  const accept = useCallback(
+    (source: CropSource | null) => {
+      if (source) {
+        setSource(source);
+        router.push('/crop/trim');
+      }
+    },
+    [setSource, router],
+  );
+
+  const chooseFromLibrary = useCallback(async () => {
     clearError();
+    accept(await pickFromLibrary());
+  }, [clearError, pickFromLibrary, accept]);
 
-    const source = await pick();
-
-    if (source) {
-      setSource(source);
-      router.push('/crop/trim');
-    }
-  }, [clearError, pick, setSource, router]);
+  const record = useCallback(async () => {
+    clearError();
+    accept(await recordWithCamera());
+  }, [clearError, recordWithCamera, accept]);
 
   return (
     <Screen edges={['top']}>
@@ -46,8 +56,8 @@ export default function CropSourceScreen() {
         <View className="gap-3">
           <Text variant="display">Pick a video</Text>
           <Text variant="body" tone="muted">
-            Choose something from your library that runs at least five seconds. You will mark the
-            exact window on the next step.
+            Choose something from your library or record a new one. It needs to run at least five
+            seconds; you will mark the exact window on the next step.
           </Text>
         </View>
 
@@ -67,7 +77,21 @@ export default function CropSourceScreen() {
       </View>
 
       <BottomBar>
-        <Button label="Choose from library" loading={isPicking} onPress={choose} />
+        <View className="gap-3">
+          <Button
+            label="Choose from library"
+            loading={pending === 'library'}
+            disabled={pending !== null}
+            onPress={chooseFromLibrary}
+          />
+          <Button
+            label="Record a video"
+            variant="secondary"
+            loading={pending === 'camera'}
+            disabled={pending !== null}
+            onPress={record}
+          />
+        </View>
       </BottomBar>
     </Screen>
   );

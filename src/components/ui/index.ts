@@ -2,6 +2,7 @@ export { Badge } from './Badge';
 export { BrandMark } from './BrandMark';
 export { Button } from './Button';
 export { Divider } from './Divider';
+export { PlaybackIcon } from './PlaybackIcon';
 export { Text } from './Text';
 export { TextField } from './TextField';
 export { Timecode } from './Timecode';

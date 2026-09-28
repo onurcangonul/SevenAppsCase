@@ -4,12 +4,12 @@ import { useCallback, useEffect } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 import { BottomBar, Screen, StepIndicator } from '@/components/layout';
-import { Button, Text, Timecode, Touchable } from '@/components/ui';
+import { Button, PlaybackIcon, Text, Timecode, Touchable } from '@/components/ui';
+import { VIDEO_ASPECT_RATIO } from '@/constants/clip';
 import { PreviewControl, TrimReadout, TrimTimeline } from '@/features/crop/components';
 import { selectSource, selectStartMs, useCropDraftStore } from '@/features/crop/cropDraftStore';
 import { useFilmstrip } from '@/features/crop/hooks/useFilmstrip';
 import { useWindowPreview } from '@/features/crop/hooks/useWindowPreview';
-import { VIDEO_ASPECT_RATIO } from '@/constants/clip';
 import { palette } from '@/theme/tokens';
 
 export default function CropTrimScreen() {
@@ -93,20 +93,32 @@ export default function CropTrimScreen() {
           </Text>
         </View>
 
-        <Touchable
-          accessibilityRole="button"
-          accessibilityLabel={isPlaying ? 'Pause preview' : 'Play the five second preview'}
-          onPress={toggle}
-          className="w-full overflow-hidden rounded-card bg-black"
-          style={{ aspectRatio: VIDEO_ASPECT_RATIO }}
-        >
-          <VideoView
-            player={player}
-            nativeControls={false}
-            contentFit="contain"
-            style={{ width: '100%', height: '100%' }}
-          />
-        </Touchable>
+        <View className="gap-3">
+          <Touchable
+            accessibilityRole="button"
+            accessibilityLabel={isPlaying ? 'Pause preview' : 'Play the five second preview'}
+            onPress={toggle}
+            className="w-full overflow-hidden rounded-card bg-black"
+            style={{ aspectRatio: VIDEO_ASPECT_RATIO }}
+          >
+            <VideoView
+              player={player}
+              nativeControls={false}
+              contentFit="contain"
+              style={{ width: '100%', height: '100%' }}
+            />
+
+            {!isPlaying ? (
+              <View className="absolute inset-0 items-center justify-center">
+                <View className="h-16 w-16 items-center justify-center rounded-full bg-canvas/65">
+                  <PlaybackIcon playing={false} size={22} color={palette.chalk} />
+                </View>
+              </View>
+            ) : null}
+          </Touchable>
+
+          <PreviewControl isPlaying={isPlaying} onToggle={toggle} />
+        </View>
 
         <View className="gap-3">
           <View className="flex-row items-center justify-between">
@@ -132,8 +144,6 @@ export default function CropTrimScreen() {
           )}
 
           <TrimReadout />
-
-          <PreviewControl isPlaying={isPlaying} onToggle={toggle} />
         </View>
       </ScrollView>
 

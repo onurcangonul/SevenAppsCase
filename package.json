@@ -14,7 +14,12 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx,js,json}\"",
-    "doctor": "expo-doctor"
+    "doctor": "expo-doctor",
+    "build:apk": "eas build --profile preview --platform android",
+    "build:simulator": "eas build --profile preview --platform ios",
+    "build:dev": "eas build --profile development --platform android",
+    "verify": "tsc --noEmit && eslint .",
+    "build:dev:simulator": "eas build --profile development-simulator --platform ios"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
