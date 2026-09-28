@@ -1,0 +1,13 @@
+export const CLIP_DURATION_SECONDS = 5;
+
+export const CLIP_DURATION_MS = CLIP_DURATION_SECONDS * 1000;
+
+export const MIN_SOURCE_DURATION_MS = CLIP_DURATION_MS;
+
+export const NAME_MAX_LENGTH = 60;
+
+export const DESCRIPTION_MAX_LENGTH = 280;
+
+export const LIBRARY_PAGE_SIZE = 12;
+
+export const TIMELINE_FRAME_COUNT = 8;
