@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { View } from 'react-native';
 
 import { EmptyState, ErrorNotice, LoadingState } from '@/components/feedback';
-import { BottomBar, Screen, ScreenHeader } from '@/components/layout';
+import { BottomBar, BrandHeader, Screen, ScreenHeader } from '@/components/layout';
 import { Button, Text } from '@/components/ui';
 import { ClipList } from '@/features/clips/components';
 import { useClipCount } from '@/features/clips/hooks/useClipCount';
@@ -55,12 +55,14 @@ export default function LibraryScreen() {
       <View className="flex-1">
         {isPending ? (
           <>
-            <ScreenHeader eyebrow="FiveSec" title="Library" />
+            <BrandHeader />
+            <ScreenHeader title="Library" />
             <LoadingState label="Reading library" />
           </>
         ) : isError ? (
           <>
-            <ScreenHeader eyebrow="FiveSec" title="Library" />
+            <BrandHeader />
+            <ScreenHeader title="Library" />
             <View className="px-gutter">
               <ErrorNotice error={error} onRetry={refetch} title="Library unavailable" />
             </View>
@@ -74,18 +76,18 @@ export default function LibraryScreen() {
             refreshing={isRefetching}
             onRefresh={refetch}
             ListHeaderComponent={
-              <ScreenHeader
-                eyebrow="FiveSec"
-                title="Library"
-                subtitle={subtitle}
-                action={
-                  clips.length > 0 ? (
-                    <Text variant="caption" tone="faint" mono>
-                      5s each
-                    </Text>
-                  ) : null
-                }
-              />
+              <>
+                <BrandHeader
+                  action={
+                    clips.length > 0 ? (
+                      <Text variant="caption" tone="faint" mono>
+                        5s each
+                      </Text>
+                    ) : null
+                  }
+                />
+                <ScreenHeader title="Library" subtitle={subtitle} />
+              </>
             }
             ListEmptyComponent={
               <EmptyState

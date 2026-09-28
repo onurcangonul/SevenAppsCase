@@ -77,7 +77,7 @@ export default function ClipDetailScreen() {
           className="flex-1"
         >
           <View className="px-gutter">
-            <VideoPlayer uri={clip.uri} className="aspect-video w-full" autoPlay loop />
+            <VideoPlayer uri={clip.uri} autoPlay loop />
           </View>
 
           <View className="gap-5 px-gutter pt-6">

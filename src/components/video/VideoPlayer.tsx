@@ -1,6 +1,8 @@
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { View } from 'react-native';
 
+import { VIDEO_ASPECT_RATIO } from '@/constants/clip';
+
 type VideoPlayerProps = {
   uri: string;
   loop?: boolean;
@@ -29,14 +31,17 @@ export function VideoPlayer({
 
   return (
     <View
-      className={['overflow-hidden rounded-card bg-surface', className].filter(Boolean).join(' ')}
+      className={['w-full overflow-hidden rounded-card bg-black', className]
+        .filter(Boolean)
+        .join(' ')}
+      style={{ aspectRatio: VIDEO_ASPECT_RATIO }}
     >
       <VideoView
         player={player}
         nativeControls={nativeControls}
         contentFit="contain"
         fullscreenOptions={{ enable: true }}
-        className="h-full w-full"
+        style={{ width: '100%', height: '100%' }}
       />
     </View>
   );

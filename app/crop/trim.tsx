@@ -9,6 +9,7 @@ import { PreviewControl, TrimReadout, TrimTimeline } from '@/features/crop/compo
 import { selectSource, selectStartMs, useCropDraftStore } from '@/features/crop/cropDraftStore';
 import { useFilmstrip } from '@/features/crop/hooks/useFilmstrip';
 import { useWindowPreview } from '@/features/crop/hooks/useWindowPreview';
+import { VIDEO_ASPECT_RATIO } from '@/constants/clip';
 import { palette } from '@/theme/tokens';
 
 export default function CropTrimScreen() {
@@ -92,14 +93,20 @@ export default function CropTrimScreen() {
           </Text>
         </View>
 
-        <View className="overflow-hidden rounded-card bg-surface">
+        <Touchable
+          accessibilityRole="button"
+          accessibilityLabel={isPlaying ? 'Pause preview' : 'Play the five second preview'}
+          onPress={toggle}
+          className="w-full overflow-hidden rounded-card bg-black"
+          style={{ aspectRatio: VIDEO_ASPECT_RATIO }}
+        >
           <VideoView
             player={player}
             nativeControls={false}
             contentFit="contain"
-            className="aspect-video w-full"
+            style={{ width: '100%', height: '100%' }}
           />
-        </View>
+        </Touchable>
 
         <View className="gap-3">
           <View className="flex-row items-center justify-between">

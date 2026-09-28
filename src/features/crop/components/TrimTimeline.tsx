@@ -13,6 +13,7 @@ const TRACK_HEIGHT = 68;
 const MIN_WINDOW_WIDTH = 56;
 const HANDLE_WIDTH = 14;
 const SCRUB_THROTTLE_MS = 55;
+const MASK_COLOR = 'rgba(9, 9, 11, 0.72)';
 
 type TrimTimelineProps = {
   durationMs: number;
@@ -129,15 +130,29 @@ export function TrimTimeline({
   );
 
   const windowStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
     width: windowWidth,
     transform: [{ translateX: offset.value }],
   }));
 
   const leftMaskStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: MASK_COLOR,
     width: offset.value,
   }));
 
   const rightMaskStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    backgroundColor: MASK_COLOR,
     width: Math.max(0, trackWidth - offset.value - windowWidth),
   }));
 
@@ -160,16 +175,10 @@ export function TrimTimeline({
           ))}
         </View>
 
-        <Animated.View
-          style={leftMaskStyle}
-          className="absolute bottom-0 left-0 top-0 bg-canvas/70"
-        />
-        <Animated.View
-          style={rightMaskStyle}
-          className="absolute bottom-0 right-0 top-0 bg-canvas/70"
-        />
+        <Animated.View style={leftMaskStyle} />
+        <Animated.View style={rightMaskStyle} />
 
-        <Animated.View style={windowStyle} className="absolute bottom-0 left-0 top-0">
+        <Animated.View style={windowStyle}>
           <View className="h-full w-full flex-row items-center justify-between rounded-lg border-2 border-accent bg-accent/5">
             <View
               style={{ width: HANDLE_WIDTH }}

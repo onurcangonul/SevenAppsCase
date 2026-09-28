@@ -1,4 +1,5 @@
 export { Badge } from './Badge';
+export { BrandMark } from './BrandMark';
 export { Button } from './Button';
 export { Divider } from './Divider';
 export { Text } from './Text';

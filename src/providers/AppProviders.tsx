@@ -5,12 +5,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { createQueryClient } from '@/lib/query/client';
+import { palette } from '@/theme/tokens';
 
 export function AppProviders({ children }: PropsWithChildren) {
   const [queryClient] = useState(createQueryClient);
 
   return (
-    <GestureHandlerRootView className="flex-1 bg-canvas">
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: palette.canvas }}>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>{children}</SafeAreaProvider>
       </QueryClientProvider>

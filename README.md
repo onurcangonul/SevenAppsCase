@@ -22,17 +22,36 @@ Scan the QR code with Expo Go, or press `i` / `a` to open a simulator.
 
 ### Trimming requires a development build
 
-`expo-trim-video` is a native module and is not part of the Expo Go runtime. The app detects this at
-startup: every screen, the picker, the timeline and the preview all work in Expo Go, but exporting a
-clip needs the native trimmer.
+`expo-trim-video` ships native code, so it is not part of the Expo Go runtime. Every screen, the
+picker, the timeline and the preview work in Expo Go, but pressing **Crop and save** there fails with
+`Trimming needs the native module` by design. Exporting a clip needs a build that has the trimmer
+linked. There is no Expo Go workaround; the module has to be compiled in.
+
+**Cloud build (works from any OS, including Windows):**
 
 ```bash
-npm run build:ios
-npm run build:android
+npm install -g eas-cli
+eas login
+eas build --profile development --platform android
+eas build --profile development --platform ios
 ```
 
-Both commands run `expo run:*`, which generates the native projects and installs a development
-build with the trimmer linked.
+Install the resulting build on the device, then run `npm start` and open it from that app instead of
+Expo Go.
+
+`expo-trim-video` was published against an older SDK. It autolinks under SDK 57 and
+`:expo-trim-video:compileDebugKotlin` succeeds against React Native 0.86, so no patch or fork is
+needed.
+
+**Local build:**
+
+```bash
+npm run build:android
+npm run build:ios
+```
+
+`expo run:*` generates the native project and installs a development build. Android needs Android
+Studio with `JAVA_HOME` and `ANDROID_HOME` set; iOS needs macOS with Xcode.
 
 ## Scripts
 
@@ -41,6 +60,7 @@ build with the trimmer linked.
 | `npm start` | Metro dev server |
 | `npm run start:clear` | Dev server with a cleared cache |
 | `npm run ios` / `npm run android` | Open in a simulator through Expo Go |
+| `npm run prebuild` | Regenerate the native projects after an `app.json` change |
 | `npm run build:ios` / `npm run build:android` | Native development build |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
@@ -164,6 +184,17 @@ bundle; Metro ships just the mark that is actually imported.
 
 One Zod schema in `src/features/clips/clipSchema.ts` backs both the create and edit forms through
 `useClipMetadataForm`, so the wizard and the edit page cannot drift apart.
+
+### Styling third-party components
+
+NativeWind only maps `className` onto its own registry of React Native components. Anything outside
+it, such as `VideoView`, receives `className` as an unknown prop and silently renders unstyled.
+`src/theme/interop.ts` registers the third-party components this app styles with `className`, and the
+root layout imports it before the first render.
+
+Animated views take plain style objects instead. Their styles are produced inside worklets, so
+keeping the whole style in one place avoids merging a compiled class list with a shared-value style
+on every frame.
 
 ### Linting note
 

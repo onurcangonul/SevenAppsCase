@@ -11,3 +11,5 @@ export const DESCRIPTION_MAX_LENGTH = 280;
 export const LIBRARY_PAGE_SIZE = 12;
 
 export const TIMELINE_FRAME_COUNT = 8;
+
+export const VIDEO_ASPECT_RATIO = 16 / 9;
