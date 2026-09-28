@@ -9,7 +9,9 @@
     "backgroundColor": "#09090B",
     "primaryColor": "#F04642",
     "icon": "./assets/icon.png",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.fivesec.app",
       "supportsTablet": true,
@@ -23,7 +25,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F04642"
       },
-      "permissions": ["android.permission.RECORD_AUDIO"]
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
       "expo-router",
@@ -31,13 +35,17 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash-icon.png",
-          "imageWidth": 180,
-          "resizeMode": "contain",
-          "backgroundColor": "#09090B",
-          "dark": {
+          "backgroundColor": "#F04642",
+          "ios": {
+            "image": "./assets/splash-screen.png",
+            "enableFullScreenImage_legacy": true,
+            "resizeMode": "cover",
+            "backgroundColor": "#F04642"
+          },
+          "android": {
             "image": "./assets/splash-icon.png",
-            "backgroundColor": "#09090B"
+            "imageWidth": 200,
+            "backgroundColor": "#F04642"
           }
         }
       ],

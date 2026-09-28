@@ -14,6 +14,7 @@ module.exports = {
         faint: '#6B6B75',
         accent: '#F04642',
         danger: '#F04642',
+        playhead: '#FFD23F',
         ink: '#09090B',
       },
       borderRadius: {

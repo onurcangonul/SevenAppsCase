@@ -4,7 +4,7 @@ import type { TextProps as RNTextProps } from 'react-native';
 import { monoFamily } from '@/theme/typography';
 
 type Variant = 'display' | 'title' | 'heading' | 'body' | 'label' | 'caption';
-type Tone = 'primary' | 'muted' | 'faint' | 'accent' | 'danger' | 'ink';
+type Tone = 'primary' | 'muted' | 'faint' | 'accent' | 'danger' | 'ink' | 'playhead';
 
 type TextProps = RNTextProps & {
   variant?: Variant;
@@ -28,6 +28,7 @@ const toneStyles: Record<Tone, string> = {
   accent: 'text-accent',
   danger: 'text-danger',
   ink: 'text-ink',
+  playhead: 'text-playhead',
 };
 
 export function Text({

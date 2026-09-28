@@ -6,6 +6,8 @@ export type AppErrorCode =
   | 'CAMERA_UNAVAILABLE'
   | 'STORAGE_FAILED'
   | 'CLIP_NOT_FOUND'
+  | 'AI_NOT_CONFIGURED'
+  | 'AI_FAILED'
   | 'UNKNOWN';
 
 export class AppError extends Error {
@@ -52,6 +54,10 @@ export function resolveErrorMessage(error: unknown): string {
       return 'The clip could not be saved to device storage.';
     case 'CLIP_NOT_FOUND':
       return 'This clip is no longer available.';
+    case 'AI_NOT_CONFIGURED':
+      return 'AI suggestions are not configured for this build. The OpenAI key is read from the EAS environment variables.';
+    case 'AI_FAILED':
+      return appError.message || 'The suggestion could not be generated.';
     case 'TRIM_FAILED':
       return appError.message || 'The clip could not be exported.';
     default:

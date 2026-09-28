@@ -1,9 +1,9 @@
 import { View } from 'react-native';
 
-type PlaybackIconProps = {
+import type { IconProps } from './types';
+
+type PlaybackIconProps = IconProps & {
   playing: boolean;
-  size?: number;
-  color?: string;
 };
 
 export function PlaybackIcon({ playing, size = 18, color = '#09090B' }: PlaybackIconProps) {

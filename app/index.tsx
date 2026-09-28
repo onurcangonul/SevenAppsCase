@@ -4,16 +4,18 @@ import { View } from 'react-native';
 
 import { EmptyState, ErrorNotice, LoadingState } from '@/components/feedback';
 import { BottomBar, BrandHeader, Screen, ScreenHeader } from '@/components/layout';
-import { Button, Text } from '@/components/ui';
+import { Button, PlusIcon, Text } from '@/components/ui';
 import { ClipList } from '@/features/clips/components';
 import { useClipCount } from '@/features/clips/hooks/useClipCount';
 import { useClipList } from '@/features/clips/hooks/useClipList';
 import { useCropDraftStore } from '@/features/crop/cropDraftStore';
+import { selectToastClipId, useToastStore } from '@/lib/toast';
 import type { Clip } from '@/types/clip';
 
 export default function LibraryScreen() {
   const router = useRouter();
   const reset = useCropDraftStore((state) => state.reset);
+  const highlightedId = useToastStore(selectToastClipId);
 
   const {
     clips,
@@ -70,6 +72,7 @@ export default function LibraryScreen() {
         ) : (
           <ClipList
             clips={clips}
+            highlightedId={highlightedId}
             onSelect={openClip}
             onEndReached={loadMore}
             isFetchingNextPage={isFetchingNextPage}
@@ -100,7 +103,7 @@ export default function LibraryScreen() {
       </View>
 
       <BottomBar>
-        <Button label="New clip" onPress={startCrop} />
+        <Button label="New clip" icon={PlusIcon} onPress={startCrop} />
       </BottomBar>
     </Screen>
   );

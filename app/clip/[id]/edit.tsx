@@ -6,6 +6,7 @@ import { Screen } from '@/components/layout';
 import { Text, Touchable } from '@/components/ui';
 import { ClipEditForm } from '@/features/clips/components';
 import { useClip } from '@/features/clips/hooks/useClip';
+import { showToast } from '@/lib/toast';
 
 export default function ClipEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -35,7 +36,13 @@ export default function ClipEditScreen() {
           <ErrorNotice error={error} onRetry={refetch} title="Clip unavailable" />
         </View>
       ) : (
-        <ClipEditForm clip={clip} onSaved={() => router.back()} />
+        <ClipEditForm
+          clip={clip}
+          onSaved={(saved) => {
+            showToast({ title: 'Changes saved', detail: saved.name });
+            router.back();
+          }}
+        />
       )}
     </Screen>
   );

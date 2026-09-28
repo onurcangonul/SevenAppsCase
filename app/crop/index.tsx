@@ -41,7 +41,7 @@ export default function CropSourceScreen() {
         <Touchable
           accessibilityRole="button"
           accessibilityLabel="Close"
-          onPress={() => router.back()}
+          onPress={() => router.dismissTo('/')}
           className="h-9 flex-row items-center pl-4"
         >
           <Text variant="label" tone="muted">

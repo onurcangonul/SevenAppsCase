@@ -9,6 +9,7 @@ import { VideoPlayer } from '@/components/video';
 import { useClip } from '@/features/clips/hooks/useClip';
 import { useDeleteClip } from '@/features/clips/hooks/useDeleteClip';
 import { formatDuration, formatRelativeDate } from '@/lib/format';
+import { showToast } from '@/lib/toast';
 
 export default function ClipDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -29,7 +30,10 @@ export default function ClipDetailScreen() {
         style: 'destructive',
         onPress: () => {
           deleteClip.mutate(clip.id, {
-            onSuccess: () => router.replace('/'),
+            onSuccess: () => {
+              showToast({ title: 'Clip deleted', detail: clip.name });
+              router.dismissTo('/');
+            },
           });
         },
       },

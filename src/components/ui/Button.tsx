@@ -1,8 +1,10 @@
+import type { ComponentType } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import type { PressableProps } from 'react-native';
 
 import { palette } from '@/theme/tokens';
 
+import type { IconProps } from './icons';
 import { Text } from './Text';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -13,6 +15,7 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   variant?: Variant;
   size?: Size;
   loading?: boolean;
+  icon?: ComponentType<IconProps>;
   className?: string;
 };
 
@@ -30,9 +33,21 @@ const labelTones = {
   danger: 'danger',
 } as const;
 
+const contentColors: Record<Variant, string> = {
+  primary: palette.ink,
+  secondary: palette.chalk,
+  ghost: palette.muted,
+  danger: palette.danger,
+};
+
 const sizeStyles: Record<Size, string> = {
   md: 'h-11 px-4',
   lg: 'h-14 px-5',
+};
+
+const iconSizes: Record<Size, number> = {
+  md: 16,
+  lg: 18,
 };
 
 export function Button({
@@ -40,11 +55,13 @@ export function Button({
   variant = 'primary',
   size = 'lg',
   loading = false,
+  icon: Icon,
   disabled,
   className,
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled || loading;
+  const contentColor = contentColors[variant];
 
   return (
     <Pressable
@@ -52,7 +69,7 @@ export function Button({
       accessibilityState={{ disabled: Boolean(isDisabled), busy: loading }}
       disabled={isDisabled}
       className={[
-        'flex-row items-center justify-center rounded-control',
+        'flex-row items-center justify-center gap-2.5 rounded-control',
         containerStyles[variant],
         sizeStyles[size],
         isDisabled ? 'opacity-40' : '',
@@ -63,11 +80,10 @@ export function Button({
       {...rest}
     >
       {loading ? (
-        <View className="mr-2">
-          <ActivityIndicator
-            size="small"
-            color={variant === 'primary' ? palette.ink : palette.chalk}
-          />
+        <ActivityIndicator size="small" color={contentColor} />
+      ) : Icon ? (
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <Icon size={iconSizes[size]} color={contentColor} />
         </View>
       ) : null}
       <Text variant="heading" tone={labelTones[variant]}>

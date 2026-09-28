@@ -2,14 +2,14 @@ import type { ReactElement } from 'react';
 import { useCallback } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
-import { Divider } from '@/components/ui';
 import { palette } from '@/theme/tokens';
 import type { Clip } from '@/types/clip';
 
-import { CLIP_ROW_HEIGHT, ClipListItem } from './ClipListItem';
+import { CLIP_CARD_HEIGHT, ClipListItem } from './ClipListItem';
 
 type ClipListProps = {
   clips: Clip[];
+  highlightedId: string | null;
   onSelect: (clip: Clip) => void;
   onEndReached: () => void;
   isFetchingNextPage: boolean;
@@ -19,11 +19,16 @@ type ClipListProps = {
   ListEmptyComponent?: ReactElement | null;
 };
 
-const SEPARATOR_HEIGHT = 1;
-const ROW_STRIDE = CLIP_ROW_HEIGHT + SEPARATOR_HEIGHT;
+const CARD_GAP = 12;
+const ROW_STRIDE = CLIP_CARD_HEIGHT + CARD_GAP;
+
+function CardGap() {
+  return <View style={{ height: CARD_GAP }} />;
+}
 
 export function ClipList({
   clips,
+  highlightedId,
   onSelect,
   onEndReached,
   isFetchingNextPage,
@@ -34,9 +39,14 @@ export function ClipList({
 }: ClipListProps) {
   const renderItem = useCallback(
     ({ item, index }: { item: Clip; index: number }) => (
-      <ClipListItem clip={item} index={index} onPress={onSelect} />
+      <ClipListItem
+        clip={item}
+        index={index}
+        highlighted={item.id === highlightedId}
+        onPress={onSelect}
+      />
     ),
-    [onSelect],
+    [onSelect, highlightedId],
   );
 
   const keyExtractor = useCallback((item: Clip) => item.id, []);
@@ -44,14 +54,15 @@ export function ClipList({
   return (
     <FlatList
       data={clips}
+      extraData={highlightedId}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       getItemLayout={(_, index) => ({
-        length: CLIP_ROW_HEIGHT,
+        length: CLIP_CARD_HEIGHT,
         offset: ROW_STRIDE * index,
         index,
       })}
-      ItemSeparatorComponent={() => <Divider className="ml-[148px]" />}
+      ItemSeparatorComponent={CardGap}
       ListHeaderComponent={ListHeaderComponent}
       ListEmptyComponent={ListEmptyComponent}
       ListFooterComponent={
@@ -60,14 +71,14 @@ export function ClipList({
             <ActivityIndicator color={palette.faint} />
           </View>
         ) : (
-          <View className="h-4" />
+          <View className="h-6" />
         )
       }
       onEndReached={onEndReached}
       onEndReachedThreshold={0.4}
       refreshing={refreshing}
       onRefresh={onRefresh}
-      initialNumToRender={10}
+      initialNumToRender={8}
       maxToRenderPerBatch={8}
       windowSize={9}
       removeClippedSubviews

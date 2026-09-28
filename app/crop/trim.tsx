@@ -21,10 +21,12 @@ export default function CropTrimScreen() {
 
   const player = useVideoPlayer(source?.uri ?? null, (instance) => {
     instance.muted = false;
-    instance.timeUpdateEventInterval = 0.1;
   });
 
-  const { isPlaying, toggle, pause, seekTo } = useWindowPreview({ player, startMs });
+  const { isPlaying, isResumable, positionMs, toggle, pause, seekTo } = useWindowPreview({
+    player,
+    startMs,
+  });
 
   const { data: frames, isPending: framesPending } = useFilmstrip(
     source?.uri,
@@ -70,7 +72,7 @@ export default function CropTrimScreen() {
         <Touchable
           accessibilityRole="button"
           accessibilityLabel="Close"
-          onPress={() => router.dismissAll()}
+          onPress={() => router.dismissTo('/')}
           className="h-9 flex-row items-center pl-4"
         >
           <Text variant="label" tone="muted">
@@ -96,7 +98,7 @@ export default function CropTrimScreen() {
         <View className="gap-3">
           <Touchable
             accessibilityRole="button"
-            accessibilityLabel={isPlaying ? 'Pause preview' : 'Play the five second preview'}
+            accessibilityLabel={isPlaying ? 'Pause preview' : 'Play the preview'}
             onPress={toggle}
             className="w-full overflow-hidden rounded-card bg-black"
             style={{ aspectRatio: VIDEO_ASPECT_RATIO }}
@@ -117,7 +119,7 @@ export default function CropTrimScreen() {
             ) : null}
           </Touchable>
 
-          <PreviewControl isPlaying={isPlaying} onToggle={toggle} />
+          <PreviewControl isPlaying={isPlaying} isResumable={isResumable} onToggle={toggle} />
         </View>
 
         <View className="gap-3">
@@ -137,13 +139,15 @@ export default function CropTrimScreen() {
               durationMs={source.durationMs}
               startMs={startMs}
               frames={frames ?? []}
+              playheadMs={positionMs}
+              showPlayhead={isPlaying || isResumable}
               onScrub={setStartMs}
               onScrubStart={handleScrubStart}
               onScrubEnd={handleScrubEnd}
             />
           )}
 
-          <TrimReadout />
+          <TrimReadout playheadMs={positionMs} />
         </View>
       </ScrollView>
 

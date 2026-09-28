@@ -4,7 +4,7 @@ import { Text } from './Text';
 
 type TimecodeProps = {
   milliseconds: number;
-  tone?: 'primary' | 'muted' | 'faint' | 'accent';
+  tone?: 'primary' | 'muted' | 'faint' | 'accent' | 'playhead';
   className?: string;
 };
 

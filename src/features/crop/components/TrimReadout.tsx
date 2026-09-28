@@ -1,11 +1,17 @@
 import { View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 
 import { Text, Timecode } from '@/components/ui';
-import { CLIP_DURATION_MS, CLIP_DURATION_SECONDS } from '@/constants/clip';
+import { CLIP_DURATION_MS } from '@/constants/clip';
 
 import { selectStartMs, useCropDraftStore } from '../cropDraftStore';
+import { PlayheadTimecode } from './PlayheadTimecode';
 
-export function TrimReadout() {
+type TrimReadoutProps = {
+  playheadMs: SharedValue<number>;
+};
+
+export function TrimReadout({ playheadMs }: TrimReadoutProps) {
   const startMs = useCropDraftStore(selectStartMs);
 
   return (
@@ -18,12 +24,13 @@ export function TrimReadout() {
       </View>
 
       <View className="items-center gap-1">
-        <Text variant="caption" tone="faint" mono className="uppercase">
-          Length
-        </Text>
-        <Text variant="caption" tone="accent" mono>
-          {CLIP_DURATION_SECONDS}.00s
-        </Text>
+        <View className="flex-row items-center gap-1.5">
+          <View className="h-2.5 w-[2px] rounded-full bg-playhead" />
+          <Text variant="caption" tone="faint" mono className="uppercase">
+            Playhead
+          </Text>
+        </View>
+        <PlayheadTimecode positionMs={playheadMs} />
       </View>
 
       <View className="items-end gap-1">
