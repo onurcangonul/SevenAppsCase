@@ -53,6 +53,7 @@ name it, and it lands in your diary.
 - **Fill with AI.** OpenAI `gpt-4.1-mini` names and describes a clip from frames of the selection.
 - **Persistent diary.** Expo SQLite with versioned migrations and keyset pagination.
 - **Edit and delete.** Rename or rewrite a clip later; deleting removes its files from disk.
+- **First-run onboarding.** Five short screens introduce the flow once, then never again.
 
 ## Try it
 
@@ -102,7 +103,8 @@ Scan the QR code, or press `i` or `a` to open a simulator. `npm start` always ta
 
 ### Configure AI suggestions
 
-Put the OpenAI key in a `.env` file at the project root:
+Copy `.env.example` to `.env` and put in the OpenAI key sent by email. The fastest way to try the
+app is the TestFlight link above; no key or local setup is needed for that.
 
 ```bash
 EXPO_PUBLIC_OPENAI_API_KEY=sk-...
@@ -147,6 +149,8 @@ production version would call OpenAI from a backend that holds the key.
 
 ```mermaid
 flowchart LR
+    Onboarding(["Onboarding<br/>first launch only"]) -->|Skip| Library
+    Onboarding -->|Record your first clip| Window
     Library(["Library"]) -->|New clip| Source["1. Source<br/>library or camera"]
     Source --> Window["2. Window<br/>scrub and preview"]
     Window --> Details["3. Details<br/>name, description, AI fill"]
@@ -157,6 +161,13 @@ flowchart LR
     Edit -->|save| Detail
     Detail -->|delete| Library
 ```
+
+**Onboarding** runs on the first launch only. Five screens walk through the app: welcome, recording
+and trimming, naming, Fill with AI (shown with the real button) and the library. Each step slides in
+from the right like the rest of the app. **Skip** on any screen goes straight to the library and
+leaves the camera permission for the first recording. **Record your first clip** on the last screen
+asks for the camera, opens it, and hands the recording to the trim step with the library already
+underneath.
 
 **Library** lists clips newest first as cards with a thumbnail, duration badge, description and the
 point in the source each was cut from. It pages in batches of twelve and pull-to-refresh re-reads
@@ -194,7 +205,7 @@ changes the name and description, with the same AI fill. **Delete** removes the 
 | **Bonus:** Expo SQLite | versioned migrations, keyset pagination |
 | **Bonus:** Reanimated | trim gesture, playhead, card entrances, toasts |
 | **Bonus:** Zod | `clipSchema.ts`, AI response validation |
-| Beyond the brief | camera capture, AI fill, resumable preview with playhead, toasts |
+| Beyond the brief | camera capture, AI fill, resumable preview with playhead, toasts, first-run onboarding |
 
 ## Architecture
 
@@ -216,26 +227,30 @@ flowchart TB
 
 ```
 app/                          Expo Router routes only
-  _layout.tsx                 providers, navigation theme, root stack, toast host
+  _layout.tsx                 providers, navigation theme, guarded root stack, toast host
+  onboarding/                 five-step first-run stack with a shared progress header
   index.tsx                   library
   clip/[id]/index.tsx         detail
   clip/[id]/edit.tsx          edit
   crop/                       three-step wizard stack
 src/
   components/                 presentation, no domain knowledge
-    ui/                       Text, Button, TextField, Badge, Timecode, BrandMark
-    ui/icons/                 Plus, Sparkles and Playback icons with a shared IconProps
+    ui/                       Text, Button, TextField, Badge, Timecode, BrandMark, Wordmark,
+                              IconBadge, GradientText, TwinklingSparkles
+    ui/icons/                 Plus, Sparkles, Playback, Camera, Pencil and Import icons
     layout/                   Screen, ScreenHeader, BrandHeader, StepIndicator, BottomBar, KeyboardAwareForm
     feedback/                 EmptyState, ErrorNotice, LoadingState, ProgressOverlay, ToastHost
     video/                    VideoPlayer, VideoThumbnail
   features/
     clips/                    schema, AI suggestion, read and write hooks, list and form components
     crop/                     draft store, source picker, filmstrip, preview, trim mutation, timeline
+    onboarding/               completion store, step order, first-clip flow, step scaffold, previews
   db/                         SQLite client, versioned migrations, repository
   lib/
     ai/                       OpenAI config and structured-output client
     media/                    native trimmer boundary, clip storage, thumbnails, frame capture
     query/                    query client and key factory
+    preferences.ts            persisted flags on the Expo SQLite key-value store
     toast.ts                  toast store and showToast
     errors.ts                 typed error codes and user-facing messages
     format.ts                 timecode, duration and date formatting
@@ -249,7 +264,7 @@ knows about SQL, file paths or the native module.
 
 ### State ownership
 
-Three kinds of state, three tools, no overlap.
+Four kinds of state, four tools, no overlap.
 
 - **SQLite** is the source of truth for saved clips. Schema changes go through numbered migrations
   guarded by `PRAGMA user_version`, and all access goes through `src/db/clipsRepository.ts`.
@@ -259,6 +274,10 @@ Three kinds of state, three tools, no overlap.
 - **Zustand** holds the crop wizard draft: the chosen source and the window start. It is in memory
   only on purpose, since an abandoned draft should not survive a restart. Scrubbing writes straight
   to the store, and only the components subscribed to `startMs` re-render.
+- **The Expo SQLite key-value store** keeps one flag: whether onboarding is done. The onboarding
+  store reads it synchronously when it is created, so the first frame already knows which screens to
+  show. The root stack wraps onboarding and the main screens in complementary `Stack.Protected`
+  guards, so completing onboarding swaps them without any manual redirect.
 
 ### Exporting a clip
 

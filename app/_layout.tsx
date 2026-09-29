@@ -7,11 +7,17 @@ import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
 
 import { ToastHost } from '@/components/feedback';
+import {
+  selectIsOnboardingComplete,
+  useOnboardingStore,
+} from '@/features/onboarding/onboardingStore';
 import { AppProviders } from '@/providers/AppProviders';
 import { navigationTheme } from '@/theme/navigation';
 import { palette } from '@/theme/tokens';
 
 export default function RootLayout() {
+  const isOnboardingComplete = useOnboardingStore(selectIsOnboardingComplete);
+
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(palette.canvas).catch(() => undefined);
   }, []);
@@ -27,10 +33,16 @@ export default function RootLayout() {
             animation: 'slide_from_right',
           }}
         >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="clip/[id]/index" />
-          <Stack.Screen name="clip/[id]/edit" options={{ presentation: 'fullScreenModal' }} />
-          <Stack.Screen name="crop" options={{ presentation: 'fullScreenModal' }} />
+          <Stack.Protected guard={!isOnboardingComplete}>
+            <Stack.Screen name="onboarding" />
+          </Stack.Protected>
+
+          <Stack.Protected guard={isOnboardingComplete}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="clip/[id]/index" />
+            <Stack.Screen name="clip/[id]/edit" options={{ presentation: 'fullScreenModal' }} />
+            <Stack.Screen name="crop" options={{ presentation: 'fullScreenModal' }} />
+          </Stack.Protected>
         </Stack>
         <ToastHost />
       </ThemeProvider>

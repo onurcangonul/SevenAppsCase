@@ -47,7 +47,7 @@ export function resolveErrorMessage(error: unknown): string {
     case 'SOURCE_TOO_SHORT':
       return 'This video is shorter than five seconds. Pick a longer one.';
     case 'PERMISSION_DENIED':
-      return 'FiveSec needs library access to pick a video.';
+      return appError.message || 'FiveSec needs library access to pick a video.';
     case 'CAMERA_UNAVAILABLE':
       return 'No camera is available here. Simulators have none, so pick a video from the library instead.';
     case 'STORAGE_FAILED':

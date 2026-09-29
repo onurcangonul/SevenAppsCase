@@ -54,8 +54,8 @@ export function useVideoSource() {
         throw new AppError(
           'PERMISSION_DENIED',
           origin === 'camera'
-            ? 'Camera permission was not granted.'
-            : 'Media library permission was not granted.',
+            ? 'FiveSec needs camera access to record a video.'
+            : 'FiveSec needs library access to pick a video.',
         );
       }
 

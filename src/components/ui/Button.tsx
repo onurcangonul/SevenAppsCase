@@ -7,7 +7,7 @@ import { palette } from '@/theme/tokens';
 import type { IconProps } from './icons';
 import { Text } from './Text';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type Variant = 'primary' | 'primaryAccent' | 'accent' | 'secondary' | 'ghost' | 'danger';
 type Size = 'md' | 'lg';
 
 type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
@@ -21,6 +21,8 @@ type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
 
 const containerStyles: Record<Variant, string> = {
   primary: 'bg-chalk active:bg-chalk/85',
+  primaryAccent: 'bg-chalk active:bg-chalk/85',
+  accent: 'bg-accent active:bg-accent/85',
   secondary: 'bg-elevated border border-hairline active:bg-hairline',
   ghost: 'bg-transparent active:bg-elevated',
   danger: 'bg-transparent border border-danger/40 active:bg-danger/10',
@@ -28,6 +30,8 @@ const containerStyles: Record<Variant, string> = {
 
 const labelTones = {
   primary: 'ink',
+  primaryAccent: 'accent',
+  accent: 'primary',
   secondary: 'primary',
   ghost: 'muted',
   danger: 'danger',
@@ -35,6 +39,8 @@ const labelTones = {
 
 const contentColors: Record<Variant, string> = {
   primary: palette.ink,
+  primaryAccent: palette.accent,
+  accent: palette.chalk,
   secondary: palette.chalk,
   ghost: palette.muted,
   danger: palette.danger,
