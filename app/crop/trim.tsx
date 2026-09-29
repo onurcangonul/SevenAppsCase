@@ -124,7 +124,7 @@ export default function CropTrimScreen() {
 
         <View className="gap-3">
           <View className="flex-row items-center justify-between">
-            <Text variant="caption" tone="faint" mono className="uppercase">
+            <Text variant="caption" tone="faint" mono caps>
               Source length
             </Text>
             <Timecode milliseconds={source.durationMs} tone="faint" />

@@ -1,4 +1,4 @@
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 
 import type { IconProps } from './types';
 
@@ -7,11 +7,33 @@ const LARGE_STAR =
 const SMALL_STAR =
   'M18.5 2 Q19.13 4.87 22 5.5 Q19.13 6.13 18.5 9 Q17.87 6.13 15 5.5 Q17.87 4.87 18.5 2 Z';
 
-export function SparklesIcon({ size = 18, color = '#FAFAFA' }: IconProps) {
+const GRADIENT_ID = 'sparklesGradient';
+
+type SparklesIconProps = IconProps & {
+  gradient?: readonly string[];
+};
+
+export function SparklesIcon({ size = 18, color = '#FAFAFA', gradient }: SparklesIconProps) {
+  const fill = gradient ? `url(#${GRADIENT_ID})` : color;
+
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" accessibilityElementsHidden>
-      <Path d={LARGE_STAR} fill={color} />
-      <Path d={SMALL_STAR} fill={color} opacity={0.85} />
+      {gradient ? (
+        <Defs>
+          <LinearGradient id={GRADIENT_ID} x1="0" y1="0" x2="1" y2="1">
+            {gradient.map((stop, index) => (
+              <Stop
+                key={stop}
+                offset={gradient.length > 1 ? index / (gradient.length - 1) : 0}
+                stopColor={stop}
+              />
+            ))}
+          </LinearGradient>
+        </Defs>
+      ) : null}
+
+      <Path d={LARGE_STAR} fill={fill} />
+      <Path d={SMALL_STAR} fill={fill} opacity={0.85} />
     </Svg>
   );
 }

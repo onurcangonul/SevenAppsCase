@@ -20,7 +20,8 @@
     "build:dev": "eas build --profile development --platform android",
     "verify": "tsc --noEmit && eslint .",
     "build:dev:simulator": "eas build --profile development-simulator --platform ios",
-    "start:dev": "expo start --dev-client"
+    "start:dev": "expo start --dev-client",
+    "build:ios:device": "eas build --profile preview-device --platform ios"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -45,7 +46,6 @@
     "expo-video-thumbnails": "~57.0.2",
     "nativewind": "^4.2.7",
     "react": "19.2.3",
-    "react-dom": "19.2.3",
     "react-hook-form": "^7.89.0",
     "react-native": "0.86.3",
     "react-native-gesture-handler": "~2.32.0",
