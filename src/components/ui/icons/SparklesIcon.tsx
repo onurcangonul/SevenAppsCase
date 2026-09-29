@@ -1,5 +1,6 @@
-import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Path } from 'react-native-svg';
 
+import { gradientStops } from '../gradientStops';
 import type { IconProps } from './types';
 
 const LARGE_STAR =
@@ -21,13 +22,7 @@ export function SparklesIcon({ size = 18, color = '#FAFAFA', gradient }: Sparkle
       {gradient ? (
         <Defs>
           <LinearGradient id={GRADIENT_ID} x1="0" y1="0" x2="1" y2="1">
-            {gradient.map((stop, index) => (
-              <Stop
-                key={stop}
-                offset={gradient.length > 1 ? index / (gradient.length - 1) : 0}
-                stopColor={stop}
-              />
-            ))}
+            {gradientStops(gradient)}
           </LinearGradient>
         </Defs>
       ) : null}

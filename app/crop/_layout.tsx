@@ -2,6 +2,10 @@ import { Stack } from 'expo-router';
 
 import { palette } from '@/theme/tokens';
 
+export const unstable_settings = {
+  anchor: 'index',
+};
+
 export default function CropLayout() {
   return (
     <Stack
