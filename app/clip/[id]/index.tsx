@@ -102,7 +102,7 @@ export default function ClipDetailScreen() {
             <Divider />
 
             <View className="gap-2">
-              <Text variant="caption" tone="faint" mono className="uppercase">
+              <Text variant="caption" tone="faint" mono caps>
                 Description
               </Text>
 
@@ -120,7 +120,7 @@ export default function ClipDetailScreen() {
             <Divider />
 
             <View className="flex-row items-center justify-between">
-              <Text variant="caption" tone="faint" mono className="uppercase">
+              <Text variant="caption" tone="faint" mono caps>
                 Source in-point
               </Text>
               <Timecode milliseconds={clip.sourceStartMs} />

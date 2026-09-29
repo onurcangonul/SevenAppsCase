@@ -283,7 +283,8 @@ sequenceDiagram
     end
     T->>S: persistClipFile(uri, id)
     S-->>T: documentDirectory/clips/id.mp4
-    T->>T: generate thumbnail
+    T->>S: persistThumbnailFile(thumbnail, id)
+    S-->>T: documentDirectory/clips/id-thumbnail.jpg
     T-->>D: new clip
     D->>C: mutate(new clip)
     C->>DB: INSERT
@@ -296,8 +297,10 @@ linked. `src/lib/media/trimmer.ts` uses `requireOptionalNativeModule` instead, s
 are used but its entrypoint never enters the bundle. In Expo Go the module resolves to `null` and the
 call surfaces a typed error rather than a crash.
 
-A trimmed file lands in the cache directory, where the OS may evict it, so `persistClipFile` moves it
-into `documentDirectory/clips` before the row is written.
+The trimmed video and its thumbnail are both produced in the cache directory, where the OS may evict
+them, so `persistClipFile` and `persistThumbnailFile` move them into `documentDirectory/clips` before
+the row is written. A thumbnail that still fails to load falls back to a placeholder instead of an
+empty frame.
 
 `expo-trim-video` was published against an older SDK. It autolinks under SDK 57 and
 `:expo-trim-video:compileDebugKotlin` succeeds against React Native 0.86, so no patch or fork is

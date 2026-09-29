@@ -12,7 +12,7 @@ export function LoadingState({ label }: LoadingStateProps) {
     <View className="flex-1 items-center justify-center gap-3 py-16">
       <ActivityIndicator color={palette.faint} />
       {label ? (
-        <Text variant="caption" tone="faint" mono className="uppercase">
+        <Text variant="caption" tone="faint" mono caps>
           {label}
         </Text>
       ) : null}

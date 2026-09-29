@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { CLIP_DURATION_MS } from '@/constants/clip';
 import { secondsFromMs } from '@/lib/format';
 import { createId } from '@/lib/id';
-import { persistClipFile, removeClipFile } from '@/lib/media/clipStorage';
+import { persistClipFile, persistThumbnailFile, removeClipFile } from '@/lib/media/clipStorage';
 import { generateThumbnail } from '@/lib/media/thumbnails';
 import { trimVideo } from '@/lib/media/trimmer';
 import type { ClipMetadata, NewClip } from '@/types/clip';
@@ -34,7 +34,8 @@ async function exportClip({ sourceUri, startMs, metadata }: TrimClipVariables): 
     throw error;
   }
 
-  const thumbnailUri = await generateThumbnail(persistedUri, { timeMs: 0 });
+  const cachedThumbnail = await generateThumbnail(persistedUri, { timeMs: 0 });
+  const thumbnailUri = cachedThumbnail ? await persistThumbnailFile(cachedThumbnail, id) : null;
 
   return {
     id,

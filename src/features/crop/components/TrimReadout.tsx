@@ -17,7 +17,7 @@ export function TrimReadout({ playheadMs }: TrimReadoutProps) {
   return (
     <View className="flex-row items-center justify-between rounded-control border border-hairline bg-surface px-4 py-3">
       <View className="gap-1">
-        <Text variant="caption" tone="faint" mono className="uppercase">
+        <Text variant="caption" tone="faint" mono caps>
           In
         </Text>
         <Timecode milliseconds={startMs} tone="primary" />
@@ -26,7 +26,7 @@ export function TrimReadout({ playheadMs }: TrimReadoutProps) {
       <View className="items-center gap-1">
         <View className="flex-row items-center gap-1.5">
           <View className="h-2.5 w-[2px] rounded-full bg-playhead" />
-          <Text variant="caption" tone="faint" mono className="uppercase">
+          <Text variant="caption" tone="faint" mono caps>
             Playhead
           </Text>
         </View>
@@ -34,7 +34,7 @@ export function TrimReadout({ playheadMs }: TrimReadoutProps) {
       </View>
 
       <View className="items-end gap-1">
-        <Text variant="caption" tone="faint" mono className="uppercase">
+        <Text variant="caption" tone="faint" mono caps>
           Out
         </Text>
         <Timecode milliseconds={startMs + CLIP_DURATION_MS} tone="primary" />

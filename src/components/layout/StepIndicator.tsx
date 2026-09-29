@@ -22,7 +22,7 @@ export function StepIndicator({ current, total, label }: StepIndicatorProps) {
         <Text variant="caption" tone="faint" mono>
           / {pad(total)}
         </Text>
-        <Text variant="caption" tone="faint" mono className="uppercase">
+        <Text variant="caption" tone="faint" mono caps>
           {label}
         </Text>
       </View>

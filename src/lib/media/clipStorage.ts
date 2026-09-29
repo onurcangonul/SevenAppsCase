@@ -14,30 +14,48 @@ function clipsDirectory(): Directory {
   return directory;
 }
 
+async function moveIntoClips(sourceUri: string, fileName: string): Promise<string> {
+  const source = new File(sourceUri);
+
+  if (!source.exists) {
+    throw new AppError('STORAGE_FAILED', 'The file to store could not be found.');
+  }
+
+  const destination = new File(clipsDirectory(), fileName);
+
+  if (destination.exists) {
+    destination.delete();
+  }
+
+  await source.move(destination, { overwrite: true });
+
+  return destination.uri;
+}
+
 export async function persistClipFile(sourceUri: string, clipId: string): Promise<string> {
   try {
-    const source = new File(sourceUri);
+    const extension = new File(sourceUri).extension || '.mp4';
 
-    if (!source.exists) {
-      throw new AppError('STORAGE_FAILED', 'The exported file could not be found.');
-    }
-
-    const extension = source.extension || '.mp4';
-    const destination = new File(clipsDirectory(), `${clipId}${extension}`);
-
-    if (destination.exists) {
-      destination.delete();
-    }
-
-    await source.move(destination, { overwrite: true });
-
-    return destination.uri;
+    return await moveIntoClips(sourceUri, `${clipId}${extension}`);
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
     }
 
     throw new AppError('STORAGE_FAILED', 'The clip could not be moved into app storage.', error);
+  }
+}
+
+export async function persistThumbnailFile(
+  sourceUri: string,
+  clipId: string,
+): Promise<string | null> {
+  try {
+    const extension = new File(sourceUri).extension || '.jpg';
+
+    return await moveIntoClips(sourceUri, `${clipId}-thumbnail${extension}`);
+  } catch {
+    return null;
   }
 }
 

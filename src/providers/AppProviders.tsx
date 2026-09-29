@@ -13,7 +13,7 @@ export function AppProviders({ children }: PropsWithChildren) {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: palette.canvas }}>
-      <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+      <KeyboardProvider>
         <QueryClientProvider client={queryClient}>
           <SafeAreaProvider>{children}</SafeAreaProvider>
         </QueryClientProvider>

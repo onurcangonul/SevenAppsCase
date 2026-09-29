@@ -1,3 +1,4 @@
+import { Children } from 'react';
 import { Text as RNText } from 'react-native';
 import type { TextProps as RNTextProps } from 'react-native';
 
@@ -10,6 +11,7 @@ type TextProps = RNTextProps & {
   variant?: Variant;
   tone?: Tone;
   mono?: boolean;
+  caps?: boolean;
 };
 
 const variantStyles: Record<Variant, string> = {
@@ -31,12 +33,20 @@ const toneStyles: Record<Tone, string> = {
   playhead: 'text-playhead',
 };
 
+function toCaps(children: RNTextProps['children']): RNTextProps['children'] {
+  return Children.map(children, (child) =>
+    typeof child === 'string' ? child.toUpperCase() : child,
+  );
+}
+
 export function Text({
   variant = 'body',
   tone = 'primary',
   mono = false,
+  caps = false,
   className,
   style,
+  children,
   ...rest
 }: TextProps) {
   return (
@@ -44,6 +54,8 @@ export function Text({
       className={[variantStyles[variant], toneStyles[tone], className].filter(Boolean).join(' ')}
       style={[mono ? { fontFamily: monoFamily } : null, style]}
       {...rest}
-    />
+    >
+      {caps ? toCaps(children) : children}
+    </RNText>
   );
 }
