@@ -112,7 +112,7 @@ export default function CropDetailsScreen() {
         </View>
 
         <View className="flex-row items-center justify-between rounded-control border border-hairline bg-surface px-4 py-3">
-          <Text variant="caption" tone="faint" mono className="uppercase">
+          <Text variant="caption" tone="faint" mono caps>
             Selection
           </Text>
 
@@ -125,13 +125,13 @@ export default function CropDetailsScreen() {
           </View>
         </View>
 
+        <ClipMetadataFields control={control} onSubmitEditing={handleSubmitPress} />
+
         <SuggestMetadataButton
           source={suggestionSource}
           onSuggested={fill}
           disabled={isExporting}
         />
-
-        <ClipMetadataFields control={control} onSubmitEditing={handleSubmitPress} />
 
         {!isTrimmerAvailable ? (
           <View className="gap-2 rounded-card border border-hairline bg-surface p-4">

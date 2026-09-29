@@ -48,13 +48,13 @@ export function ClipEditForm({ clip, onSaved }: ClipEditFormProps) {
       />
 
       <View className="gap-5 px-gutter">
+        <ClipMetadataFields control={control} />
+
         <SuggestMetadataButton
           source={suggestionSource}
           onSuggested={fill}
           disabled={updateClip.isPending}
         />
-
-        <ClipMetadataFields control={control} />
 
         {updateClip.isError ? (
           <ErrorNotice error={updateClip.error} title="Could not save" />

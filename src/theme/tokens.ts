@@ -11,3 +11,5 @@ export const palette = {
   playhead: '#FFD23F',
   ink: '#09090B',
 } as const;
+
+export const aiGradient = ['#22E4C8', '#2F7BF6', '#B026E0'] as const;
