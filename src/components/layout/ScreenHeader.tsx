@@ -15,7 +15,7 @@ export function ScreenHeader({ title, subtitle, eyebrow, action }: ScreenHeaderP
     <View className="flex-row items-start justify-between gap-4 px-gutter pb-5 pt-2">
       <View className="flex-1 gap-1">
         {eyebrow ? (
-          <Text variant="caption" tone="faint" mono className="uppercase">
+          <Text variant="caption" tone="faint" mono caps>
             {eyebrow}
           </Text>
         ) : null}

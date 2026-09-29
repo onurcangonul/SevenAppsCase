@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Text } from '@/components/ui';
@@ -10,13 +11,17 @@ type VideoThumbnailProps = {
 };
 
 export function VideoThumbnail({ uri, className, contentFit = 'cover' }: VideoThumbnailProps) {
+  const [failedUri, setFailedUri] = useState<string | null>(null);
+  const showImage = uri !== null && uri !== failedUri;
+
   return (
     <View
       className={['overflow-hidden rounded-lg bg-elevated', className].filter(Boolean).join(' ')}
     >
-      {uri ? (
+      {showImage ? (
         <Image
           source={{ uri }}
+          onError={() => setFailedUri(uri)}
           contentFit={contentFit}
           transition={160}
           cachePolicy="memory-disk"
